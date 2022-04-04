@@ -1,14 +1,16 @@
+#!/usr/bin/python
 import socket
 import threading
 
 from models import Andar
-from utils import clear_menu, play_alarme, define_on_off
+from utils import clear_menu, play_alarme, define_on_off, define_aberto_fechado, append_log_file
 from json_parser import set_gpio_values
 
 from pynput import keyboard
 from playsound import playsound
 
 import time
+from datetime import datetime
 import curses
 from curses import wrapper
 
@@ -46,65 +48,83 @@ def handle_input(key):
         andares[0].set_lampada1()
         if andares[0].get_lampada1():
             connections[0]["conn"].send(f"{andares[0].get_lampada1_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,lampadaT01,{datetime.now().time()}")
         else:
             connections[0]["conn"].send(f"{andares[0].get_lampada1_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,lampadaT01,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f2:
         andares[0].set_lampada2()
         if andares[0].get_lampada2():
             connections[0]["conn"].send(f"{andares[0].get_lampada2_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,lampadaT02,{datetime.now().time()}")
         else:
             connections[0]["conn"].send(f"{andares[0].get_lampada2_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,lampadaT02,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f3:
         andares[0].set_corredor()
         if andares[0].get_corredor():
             connections[0]["conn"].send(f"{andares[0].get_corredor_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,corredor terreo,{datetime.now().time()}")
         else:
             connections[0]["conn"].send(f"{andares[0].get_corredor_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,corredor terreo,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f4:
         andares[0].set_arcondicionado()
         if andares[0].get_arcondicionado():
             connections[0]["conn"].send(f"{andares[0].get_arcondicionado_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,arcondicionado terreo,{datetime.now().time()}")
         else:
             connections[0]["conn"].send(f"{andares[0].get_arcondicionado_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,arcondicionado terreo,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f5:
         andares[0].set_aspersor()
         if andares[0].get_aspersor():
             connections[0]["conn"].send(f"{andares[0].get_aspersor_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,aspersor,{datetime.now().time()}")
         else:
             connections[0]["conn"].send(f"{andares[0].get_aspersor_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,aspersor,{datetime.now().time()}")
         render_menu(stdscr_global)
 
     elif key == keyboard.Key.f6:
         andares[1].set_lampada1()
         if andares[1].get_lampada1():
             connections[1]["conn"].send(f"{andares[1].get_lampada1_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,lampada101,{datetime.now().time()}")
         else:
             connections[1]["conn"].send(f"{andares[1].get_lampada1_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,lampada101,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f7:
         andares[1].set_lampada2()
         if andares[1].get_lampada2():
             connections[1]["conn"].send(f"{andares[1].get_lampada2_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,lampada102,{datetime.now().time()}")
         else:
             connections[1]["conn"].send(f"{andares[1].get_lampada2_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,lampada102,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f8:
         andares[1].set_corredor()
         if andares[1].get_corredor():
             connections[1]["conn"].send(f"{andares[1].get_corredor_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,corredor 1 andar,{datetime.now().time()}")
         else:
             connections[1]["conn"].send(f"{andares[1].get_corredor_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,corredor 1 andar,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f9:
         andares[1].set_arcondicionado()
         if andares[1].get_arcondicionado():
             connections[1]["conn"].send(f"{andares[1].get_arcondicionado_gpio()}=1".encode(FORMATO))
+            append_log_file(f"ligou,arcondicionado 1 andar,{datetime.now().time()}")
         else:
             connections[1]["conn"].send(f"{andares[1].get_arcondicionado_gpio()}=0".encode(FORMATO))
+            append_log_file(f"desligou,arcondicionado 1 andar,{datetime.now().time()}")
         render_menu(stdscr_global)
     elif key == keyboard.Key.f10:
         andares[0].set_alarme()
@@ -178,8 +198,10 @@ def handle_connection(conn, addr, stdscr, andar):
                     value = int(msg.split("=")[1])
                     if value == 1:
                         andar.set_janela1(True)
+                        append_log_file(f"abriu,janela t1,{datetime.now().time()}")
                     elif value == 0:
                         andar.set_janela1(False)
+                        append_log_file(f"fechou,janela t1,{datetime.now().time()}")
                 except:
                     pass
 
@@ -188,8 +210,10 @@ def handle_connection(conn, addr, stdscr, andar):
                     value = int(msg.split("=")[1])
                     if value == 1:
                         andar.set_janela2(True)
+                        append_log_file(f"abriu,janela t2,{datetime.now().time()}")
                     elif value == 0:
                         andar.set_janela2(False)
+                        append_log_file(f"fechou,janela t2,{datetime.now().time()}")
                 except:
                     pass
 
@@ -198,8 +222,10 @@ def handle_connection(conn, addr, stdscr, andar):
                     value = int(msg.split("=")[1])
                     if value == 1:
                         andar.set_porta(True)
+                        append_log_file(f"abriu,porta terreo,{datetime.now().time()}")
                     elif value == 0:
                         andar.set_porta(False)
+                        append_log_file(f"fechou,porta terreo,{datetime.now().time()}")
                 except:
                     pass
 
@@ -208,8 +234,10 @@ def handle_connection(conn, addr, stdscr, andar):
                     value = int(msg.split("=")[1])
                     if value == 1:
                         andar.set_fumaca(True)
+                        append_log_file(f"detectou,fumaca,{datetime.now().time()}")
                     elif value == 0:
                         andar.set_fumaca(False)
+                        append_log_file(f"deixou de detectar,fumaca,{datetime.now().time()}")
                 except:
                     pass
 
@@ -236,9 +264,9 @@ def render_menu(stdscr):
     stdscr.addstr(15,0, f"Lampada Corredor: {define_on_off(andares[0].get_corredor())}")
     stdscr.addstr(16,0, f"Ar-condicionado: {define_on_off(andares[0].get_arcondicionado())}")
     stdscr.addstr(17,0, f"Aspersor: {define_on_off(andares[0].get_aspersor())}")
-    stdscr.addstr(18,0, f"Janela T01: {define_on_off(andares[0].get_janela1())}")
-    stdscr.addstr(19,0, f"Janela T02: {define_on_off(andares[0].get_janela2())}")
-    stdscr.addstr(20,0, f"Porta: {define_on_off(andares[0].get_porta())}")
+    stdscr.addstr(18,0, f"Janela T01: {define_aberto_fechado(andares[0].get_janela1())}")
+    stdscr.addstr(19,0, f"Janela T02: {define_aberto_fechado(andares[0].get_janela2())}")
+    stdscr.addstr(20,0, f"Porta: {define_aberto_fechado(andares[0].get_porta())}")
     stdscr.addstr(21,0, f"Fumaça: {define_on_off(andares[0].get_fumaca())}")
 
     stdscr.addstr(23,0, f"ANDAR: {andares[1].get_name()}", curses.A_BOLD)
@@ -249,8 +277,8 @@ def render_menu(stdscr):
     stdscr.addstr(28,0, f"Lampada 102: {define_on_off(andares[1].get_lampada2())}")
     stdscr.addstr(29,0, f"Lampada Corredor: {define_on_off(andares[1].get_corredor())}")
     stdscr.addstr(30,0, f"Ar-condicionado: {define_on_off(andares[1].get_arcondicionado())}")
-    stdscr.addstr(31,0, f"Janela 101: {define_on_off(andares[1].get_janela1())}")
-    stdscr.addstr(32,0, f"Janela 102: {define_on_off(andares[1].get_janela2())}")
+    stdscr.addstr(31,0, f"Janela 101: {define_aberto_fechado(andares[1].get_janela1())}")
+    stdscr.addstr(32,0, f"Janela 102: {define_aberto_fechado(andares[1].get_janela2())}")
     stdscr.addstr(33,0, f"Fumaça: {define_on_off(andares[1].get_fumaca())}")
 
     stdscr.noutrefresh()
@@ -279,10 +307,7 @@ def start(stdscr):
         new_andar = Andar()
         andares.append(new_andar)
 
-        # andares.append(new_andar) # TEMP
-
         thread = threading.Thread(target=handle_connection, args=(conn, addr, stdscr, new_andar))
-        # thread.start()
 
         threads.append(thread)
         connection_count += 1

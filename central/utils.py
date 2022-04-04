@@ -10,6 +10,12 @@ def define_on_off(value):
     else:
         return "Desligado(a)"
 
+def define_aberto_fechado(value):
+    if value:
+        return "Aberto(a)"
+    else:
+        return "Fechado(a)"
+
 def clear_menu(stdscr):
 
     stdscr.addstr(6,0, f"Alarme:                                         ")
@@ -43,3 +49,6 @@ def clear_menu(stdscr):
     stdscr.noutrefresh()
     curses.doupdate()
 
+def append_log_file(value: str):
+    with open("log.csv", "a") as f:
+        f.write(value + "\n")

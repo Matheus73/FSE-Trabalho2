@@ -6,13 +6,15 @@ RUN apt-get update
 
 WORKDIR /home
 
-COPY docker/requirements.txt .
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt 
 
-COPY ./src/ ./src/
+COPY ./central/ ./central/
 COPY ./start.sh ./start.sh
 
-EXPOSE 5000
+EXPOSE 10048
+
+RUN chmod 777 ./start.sh
 
 CMD ./start.sh
