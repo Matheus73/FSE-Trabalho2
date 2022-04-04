@@ -9,11 +9,13 @@ typedef struct {
 typedef struct {
     char ip[16];
     int port;
+    IO *dht22;
     char *name;
     IO *outputs;
     IO *inputs;
     unsigned int outputs_len;
     unsigned int inputs_len;
+    unsigned int temperatura_len;
 } Json_Config;
 
 

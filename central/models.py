@@ -136,21 +136,21 @@ class Andar:
 
     def set_corredor(self):
         self.corredor = not self.corredor
-        
+
     def set_arcondicionado(self):
         self.arcondicionado = not self.arcondicionado
-        
+
     def set_aspersor(self):
         self.aspersor = not self.aspersor
 
-    def set_porta(self):
-        self.porta = not self.porta
+    def set_porta(self, value):
+        self.porta = value
 
-    def set_janela1(self):
-        self.janela1 = not self.janela1
+    def set_janela1(self,value):
+        self.janela1 = value
 
-    def set_janela2(self):
-        self.janela2 = not self.janela2
+    def set_janela2(self, value):
+        self.janela2 = value
 
-    def set_fumaca(self):
-        self.fumaca = not self.fumaca
+    def set_fumaca(self, value):
+        self.fumaca = value

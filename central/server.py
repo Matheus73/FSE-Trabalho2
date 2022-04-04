@@ -31,13 +31,13 @@ andares = []
 
 def turn_off_outputs(andar: Andar, conn):
     conn.send(f"{andar.get_lampada1_gpio()}=0".encode(FORMATO))
-    time.sleep(1)
+    time.sleep(0.5)
     conn.send(f"{andar.get_lampada2_gpio()}=0".encode(FORMATO))
-    time.sleep(1)
+    time.sleep(0.5)
     conn.send(f"{andar.get_corredor_gpio()}=0".encode(FORMATO))
-    time.sleep(1)
+    time.sleep(0.5)
     conn.send(f"{andar.get_arcondicionado_gpio()}=0".encode(FORMATO))
-    time.sleep(1)
+    time.sleep(0.5)
     if(andar.get_name() == "Térreo"):
         conn.send(f"{andar.get_aspersor_gpio()}=0".encode(FORMATO))
 
@@ -117,12 +117,10 @@ def handle_connection(conn, addr, stdscr, andar):
     global connections
     global total_ocupacao
 
-    conn.send("start".encode(FORMATO))
     name = False
 
     while(True):
         msg = conn.recv(1024).decode(FORMATO)
-        # render_menu(stdscr)
         if(msg):
             if(msg.startswith("name=")):
                 mensagem_separada = msg.split("=")
@@ -138,6 +136,7 @@ def handle_connection(conn, addr, stdscr, andar):
                     andar.set_name("Térreo")
                     set_gpio_values(andar, "configuracao_andar_terreo.json")
                 else:
+                    andar.set_name("1º Andar")
                     set_gpio_values(andar, "configuracao_andar_1.json")
                 turn_off_outputs(andar,conn)
 
@@ -163,44 +162,96 @@ def handle_connection(conn, addr, stdscr, andar):
                     thread_sound.start()
 
             elif(msg.startswith("ocup=")):
-                value = int(msg.split("=")[1])
-                andar.set_ocupacao(value)
-                if andar.get_name() == "Terreo":
-                    total_ocupacao += value
-                else:
-                    andares[0].set_ocupacao(-1)
-                render_menu(stdscr)
+                try:
+                    value = int(msg.split("=")[1])
+                    andar.set_ocupacao(value)
+                    if andar.get_name() == "Terreo":
+                        total_ocupacao += value
+                    else:
+                        andares[0].set_ocupacao(-1)
+                    render_menu(stdscr)
+                except:
+                    pass
+
+            elif(msg.startswith("jan1=")):
+                try:
+                    value = int(msg.split("=")[1])
+                    if value == 1:
+                        andar.set_janela1(True)
+                    elif value == 0:
+                        andar.set_janela1(False)
+                except:
+                    pass
+
+            elif(msg.startswith("jan2=")):
+                try:
+                    value = int(msg.split("=")[1])
+                    if value == 1:
+                        andar.set_janela2(True)
+                    elif value == 0:
+                        andar.set_janela2(False)
+                except:
+                    pass
+
+            elif(msg.startswith("port=")):
+                try:
+                    value = int(msg.split("=")[1])
+                    if value == 1:
+                        andar.set_porta(True)
+                    elif value == 0:
+                        andar.set_porta(False)
+                except:
+                    pass
+
+            elif(msg.startswith("fumaca=")):
+                try:
+                    value = int(msg.split("=")[1])
+                    if value == 1:
+                        andar.set_fumaca(True)
+                    elif value == 0:
+                        andar.set_fumaca(False)
+                except:
+                    pass
+
+            render_menu(stdscr)
 
 def render_menu(stdscr):
     global total_ocupacao
     clear_menu(stdscr)
+    stdscr.addstr(0,0, f"----------- [INPUTS] -----------",curses.A_BOLD)
+    stdscr.addstr(1,0, f"[F1] Lampada T01 [F2] Lampada T02 [F3] Lampada Corredor Terreo")
+    stdscr.addstr(2,0, f"[F4] Ar-condicionado Terreo [F5] Aspersor Terreo [F6] Lampada 101")
+    stdscr.addstr(3,0, f"[F7] Lampada 102 [F8] Lampada corredor 1º andar [F9] Ar-condicionado 1º andar")
+    stdscr.addstr(4,0, f"----------- [F10] Alarme ----------")
 
-    stdscr.addstr(4,0, f"Temperatura: {andares[0].get_temperature()}")
-    stdscr.addstr(5,0, f"Umidade: {andares[0].get_moisture()}")
     stdscr.addstr(6,0, f"Alarme: {define_on_off(andares[0].get_alarme())}")
     stdscr.addstr(7,0, f"Ocupação Total: {total_ocupacao}")
 
     stdscr.addstr(9,0, f"ANDAR: {andares[0].get_name()}", curses.A_BOLD)
-    stdscr.addstr(10,0, f"Ocupação: {andares[0].get_ocupacao()}")
-    stdscr.addstr(11,0, f"Lampada T01: {define_on_off(andares[0].get_lampada1())}")
-    stdscr.addstr(12,0, f"Lampada T02: {define_on_off(andares[0].get_lampada2())}")
-    stdscr.addstr(13,0, f"Lampada Corredor: {define_on_off(andares[0].get_corredor())}")
-    stdscr.addstr(14,0, f"Ar-condicionado: {define_on_off(andares[0].get_arcondicionado())}")
-    stdscr.addstr(15,0, f"Aspersor: {define_on_off(andares[0].get_aspersor())}")
-    stdscr.addstr(16,0, f"Janela T01: {define_on_off(andares[0].get_janela1())}")
-    stdscr.addstr(17,0, f"Janela T02: {define_on_off(andares[0].get_janela2())}")
-    stdscr.addstr(18,0, f"Porta: {define_on_off(andares[0].get_porta())}")
-    stdscr.addstr(19,0, f"Fumaça: {define_on_off(andares[0].get_fumaca())}")
+    stdscr.addstr(10,0, f"Temperatura: {andares[0].get_temperature()}")
+    stdscr.addstr(11,0, f"Umidade: {andares[0].get_moisture()}")
+    stdscr.addstr(12,0, f"Ocupação: {andares[0].get_ocupacao()}")
+    stdscr.addstr(13,0, f"Lampada T01: {define_on_off(andares[0].get_lampada1())}")
+    stdscr.addstr(14,0, f"Lampada T02: {define_on_off(andares[0].get_lampada2())}")
+    stdscr.addstr(15,0, f"Lampada Corredor: {define_on_off(andares[0].get_corredor())}")
+    stdscr.addstr(16,0, f"Ar-condicionado: {define_on_off(andares[0].get_arcondicionado())}")
+    stdscr.addstr(17,0, f"Aspersor: {define_on_off(andares[0].get_aspersor())}")
+    stdscr.addstr(18,0, f"Janela T01: {define_on_off(andares[0].get_janela1())}")
+    stdscr.addstr(19,0, f"Janela T02: {define_on_off(andares[0].get_janela2())}")
+    stdscr.addstr(20,0, f"Porta: {define_on_off(andares[0].get_porta())}")
+    stdscr.addstr(21,0, f"Fumaça: {define_on_off(andares[0].get_fumaca())}")
 
-    stdscr.addstr(21,0, f"ANDAR: {andares[1].get_name()}", curses.A_BOLD)
-    stdscr.addstr(22,0, f"Ocupação: {andares[1].get_ocupacao()}")
-    stdscr.addstr(23,0, f"Lampada 101: {define_on_off(andares[1].get_lampada1())}")
-    stdscr.addstr(24,0, f"Lampada 102: {define_on_off(andares[1].get_lampada2())}")
-    stdscr.addstr(25,0, f"Lampada Corredor: {define_on_off(andares[1].get_corredor())}")
-    stdscr.addstr(26,0, f"Ar-condicionado: {define_on_off(andares[1].get_arcondicionado())}")
-    stdscr.addstr(27,0, f"Janela 101: {define_on_off(andares[1].get_janela1())}")
-    stdscr.addstr(28,0, f"Janela 102: {define_on_off(andares[1].get_janela2())}")
-    stdscr.addstr(29,0, f"Fumaça: {define_on_off(andares[1].get_fumaca())}")
+    stdscr.addstr(23,0, f"ANDAR: {andares[1].get_name()}", curses.A_BOLD)
+    stdscr.addstr(24,0, f"Temperatura: {andares[1].get_temperature()}")
+    stdscr.addstr(25,0, f"Umidade: {andares[1].get_moisture()}")
+    stdscr.addstr(26,0, f"Ocupação: {andares[1].get_ocupacao()}")
+    stdscr.addstr(27,0, f"Lampada 101: {define_on_off(andares[1].get_lampada1())}")
+    stdscr.addstr(28,0, f"Lampada 102: {define_on_off(andares[1].get_lampada2())}")
+    stdscr.addstr(29,0, f"Lampada Corredor: {define_on_off(andares[1].get_corredor())}")
+    stdscr.addstr(30,0, f"Ar-condicionado: {define_on_off(andares[1].get_arcondicionado())}")
+    stdscr.addstr(31,0, f"Janela 101: {define_on_off(andares[1].get_janela1())}")
+    stdscr.addstr(32,0, f"Janela 102: {define_on_off(andares[1].get_janela2())}")
+    stdscr.addstr(33,0, f"Fumaça: {define_on_off(andares[1].get_fumaca())}")
 
     stdscr.noutrefresh()
     curses.doupdate()

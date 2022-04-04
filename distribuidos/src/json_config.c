@@ -23,6 +23,7 @@ Json_Config json_config_parse(char *json_path){
     cJSON *port = NULL;
     cJSON *name = NULL;
     cJSON *outputs = NULL;
+    cJSON *temperatura = NULL;
     cJSON *inputs = NULL;
     cJSON *io = NULL;
     Json_Config json_config;
@@ -30,6 +31,7 @@ Json_Config json_config_parse(char *json_path){
     ip = cJSON_GetObjectItemCaseSensitive(config, "ip_servidor_central");
     port = cJSON_GetObjectItemCaseSensitive(config, "porta_servidor_central");
     name = cJSON_GetObjectItemCaseSensitive(config, "nome");
+    temperatura = cJSON_GetObjectItemCaseSensitive(config, "sensor_temperatura");
     outputs = cJSON_GetObjectItemCaseSensitive(config, "outputs");
     inputs = cJSON_GetObjectItemCaseSensitive(config, "inputs");
 
@@ -39,9 +41,12 @@ Json_Config json_config_parse(char *json_path){
     json_config.port = port->valueint;
 
     json_config.outputs_len = cJSON_GetArraySize(outputs);
+    json_config.temperatura_len = cJSON_GetArraySize(temperatura);
     json_config.inputs_len = cJSON_GetArraySize(inputs);
+
     json_config.outputs = malloc(sizeof(IO)*json_config.outputs_len);
     json_config.inputs = malloc(sizeof(IO)*json_config.inputs_len);
+    json_config.dht22 = malloc(sizeof(IO)*json_config.temperatura_len);
 
     int index = 0;
     cJSON_ArrayForEach(io, outputs){
@@ -70,6 +75,20 @@ Json_Config json_config_parse(char *json_path){
         strcpy(json_config.inputs[index].type, type->valuestring);
         strcpy(json_config.inputs[index].tag, tag->valuestring);
         json_config.inputs[index].gpio = gpio->valueint;
+        index++;
+    }
+    index=0;
+    cJSON_ArrayForEach(io, temperatura){
+        cJSON *type = cJSON_GetObjectItemCaseSensitive(io, "type");
+        cJSON *tag = cJSON_GetObjectItemCaseSensitive(io, "tag");
+        cJSON *gpio = cJSON_GetObjectItemCaseSensitive(io, "gpio");
+        
+        json_config.dht22[index].type = malloc(sizeof(char)*(strlen(type->valuestring)+1));
+        json_config.dht22[index].tag = malloc(sizeof(char)*(strlen(tag->valuestring)+1));
+
+        strcpy(json_config.dht22[index].type, type->valuestring);
+        strcpy(json_config.dht22[index].tag, tag->valuestring);
+        json_config.dht22[index].gpio = gpio->valueint;
         index++;
     }
 
