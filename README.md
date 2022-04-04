@@ -12,6 +12,17 @@ realizar a contagem de pessoas pelo prédio, etc.
 
 ![gif de funcionamento](./static/apresentacao.gif)
 
+### Observações:
+
+* Recomenda-se executar o **Terreo** primeiro que o **1º Andar**.
+* Caso queira executar modificando a porta do central ou o ip, se faz necessário atualizar os arquivos **json** tanto na pasta `central` quanto na pasta `distribuido`.
+* Executar o **Central** em uma janela do terminal grande (se possivel em tela cheia) pois o layout montado depende disso.
+* Devido a biblioteca **pynput** se faz necessário que o projeto seja executado utilizando tunalamento via ssh, usando o comando abaixo:
+
+    ```
+    ssh -R 10048:localhost:10048 <usuario e path da rasp42>
+    ```
+
 ## Como executar
 
 Na execução desse projeto deve-se executar primeiro o servidor central e depois os distribuidos.
@@ -34,8 +45,10 @@ source .venv/bin/activate
 Executar o servidor central:
 
 ```
-python central/server.py
+cd central
+python server.py
 ```
+Não executar de fora da pasta `central` pois o arquivo `alarme.mp3` se encontra dentro da mesma.
 
 #### Distribuidos
 
@@ -47,11 +60,6 @@ os comandos disponiveis são:
 * `make terreo` - Executa o distribuido usando o json de configurações do terreo
 * `make 1andar` - Executa o distribuido usando o json de configurações do 1º andar
 
-### Observações:
-
-* Recomenda-se executar o **Terreo** primeiro que o **1º Andar**.
-* Caso queira executar modificando a porta do central ou o ip, se faz necessário atualizar os arquivos **json** tanto na pasta `central` quanto na pasta `distribuido`.
-* Executar o **Central** em uma janela do terminal grande (se possivel em tela cheia) pois o layout montado depende disso.
 
 ## Comandos
 
