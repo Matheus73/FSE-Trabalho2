@@ -1,8 +1,4 @@
 import curses
-from playsound import playsound
-
-def play_alarme():
-    playsound('alarme.mp3')
 
 def define_on_off(value):
     if value:

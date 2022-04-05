@@ -3,11 +3,8 @@ import socket
 import threading
 
 from models import Andar
-from utils import clear_menu, play_alarme, define_on_off, define_aberto_fechado, append_log_file
-from json_parser import set_gpio_values
-
-from pynput import keyboard
-from playsound import playsound
+from utils import clear_menu, define_on_off, define_aberto_fechado, append_log_file
+from json_parser import set_gpio_values, read_json_file
 
 import time
 from datetime import datetime
@@ -15,8 +12,12 @@ import curses
 from curses import wrapper
 
 SERVER_IP = socket.gethostbyname(socket.gethostname())
-PORT = 10048
-ADDR = ("localhost", PORT)
+
+json_config = read_json_file("configuracao_andar_terreo.json")
+
+PORT = json_config["porta_servidor_central"]
+IP = json_config["ip_servidor_central"]
+ADDR = (IP, PORT)
 FORMATO = 'utf-8'
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,7 +45,7 @@ def turn_off_outputs(andar: Andar, conn):
         conn.send(f"{andar.get_aspersor_gpio()}=0".encode(FORMATO))
 
 def handle_input(key):
-    if key == keyboard.Key.f1:
+    if key == curses.KEY_F1:
         andares[0].set_lampada1()
         if andares[0].get_lampada1():
             connections[0]["conn"].send(f"{andares[0].get_lampada1_gpio()}=1".encode(FORMATO))
@@ -53,7 +54,7 @@ def handle_input(key):
             connections[0]["conn"].send(f"{andares[0].get_lampada1_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,lampadaT01,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f2:
+    elif key == curses.KEY_F2:
         andares[0].set_lampada2()
         if andares[0].get_lampada2():
             connections[0]["conn"].send(f"{andares[0].get_lampada2_gpio()}=1".encode(FORMATO))
@@ -62,7 +63,7 @@ def handle_input(key):
             connections[0]["conn"].send(f"{andares[0].get_lampada2_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,lampadaT02,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f3:
+    elif key == curses.KEY_F3:
         andares[0].set_corredor()
         if andares[0].get_corredor():
             connections[0]["conn"].send(f"{andares[0].get_corredor_gpio()}=1".encode(FORMATO))
@@ -71,7 +72,7 @@ def handle_input(key):
             connections[0]["conn"].send(f"{andares[0].get_corredor_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,corredor terreo,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f4:
+    elif key == curses.KEY_F4:
         andares[0].set_arcondicionado()
         if andares[0].get_arcondicionado():
             connections[0]["conn"].send(f"{andares[0].get_arcondicionado_gpio()}=1".encode(FORMATO))
@@ -80,7 +81,7 @@ def handle_input(key):
             connections[0]["conn"].send(f"{andares[0].get_arcondicionado_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,arcondicionado terreo,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f5:
+    elif key == curses.KEY_F5:
         andares[0].set_aspersor()
         if andares[0].get_aspersor():
             connections[0]["conn"].send(f"{andares[0].get_aspersor_gpio()}=1".encode(FORMATO))
@@ -90,7 +91,7 @@ def handle_input(key):
             append_log_file(f"desligou,aspersor,{datetime.now().time()}")
         render_menu(stdscr_global)
 
-    elif key == keyboard.Key.f6:
+    elif key == curses.KEY_F6:
         andares[1].set_lampada1()
         if andares[1].get_lampada1():
             connections[1]["conn"].send(f"{andares[1].get_lampada1_gpio()}=1".encode(FORMATO))
@@ -99,7 +100,7 @@ def handle_input(key):
             connections[1]["conn"].send(f"{andares[1].get_lampada1_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,lampada101,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f7:
+    elif key == curses.KEY_F7:
         andares[1].set_lampada2()
         if andares[1].get_lampada2():
             connections[1]["conn"].send(f"{andares[1].get_lampada2_gpio()}=1".encode(FORMATO))
@@ -108,7 +109,7 @@ def handle_input(key):
             connections[1]["conn"].send(f"{andares[1].get_lampada2_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,lampada102,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f8:
+    elif key == curses.KEY_F8:
         andares[1].set_corredor()
         if andares[1].get_corredor():
             connections[1]["conn"].send(f"{andares[1].get_corredor_gpio()}=1".encode(FORMATO))
@@ -117,7 +118,7 @@ def handle_input(key):
             connections[1]["conn"].send(f"{andares[1].get_corredor_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,corredor 1 andar,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f9:
+    elif key == curses.KEY_F9:
         andares[1].set_arcondicionado()
         if andares[1].get_arcondicionado():
             connections[1]["conn"].send(f"{andares[1].get_arcondicionado_gpio()}=1".encode(FORMATO))
@@ -126,12 +127,9 @@ def handle_input(key):
             connections[1]["conn"].send(f"{andares[1].get_arcondicionado_gpio()}=0".encode(FORMATO))
             append_log_file(f"desligou,arcondicionado 1 andar,{datetime.now().time()}")
         render_menu(stdscr_global)
-    elif key == keyboard.Key.f10:
+    elif key == curses.KEY_F10:
         andares[0].set_alarme()
         render_menu(stdscr_global)
-        if andares[0].get_alarme():
-            thread_sound = threading.Thread(target=play_alarme)
-            thread_sound.start()
 
 def handle_connection(conn, addr, stdscr, andar):
     global connections
@@ -177,9 +175,6 @@ def handle_connection(conn, addr, stdscr, andar):
                 value = msg.split("=")[1]
                 andar.set_alarme()
                 render_menu(stdscr)
-                if andar.get_alarme():
-                    thread_sound = threading.Thread(target=play_alarme)
-                    thread_sound.start()
 
             elif(msg.startswith("ocup=")):
                 try:
@@ -288,10 +283,13 @@ def start(stdscr):
     global andares
     global stdscr_global
 
+    curses.cbreak()
+    stdscr.keypad(True)
     stdscr_global = stdscr
 
-    listener = keyboard.Listener(on_press=handle_input)
-    listener.start()
+    # listener = keyboard.Listener(on_press=handle_input)
+    # listener.start()
+
 
     stdscr.clear()
     stdscr.addstr(0, 0, "[STARTED] Socket Iniciado!", curses.A_BOLD)
@@ -317,5 +315,15 @@ def start(stdscr):
 
     for i in threads:
         i.start()
+
+    stdscr.nodelay(True)
+    while True:
+        key_pressed = stdscr.getch()
+        if key_pressed != -1:
+            handle_input(key_pressed)
+        render_menu(stdscr)
+        time.sleep(1)
+
+
 
 wrapper(start)

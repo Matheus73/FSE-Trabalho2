@@ -15,13 +15,9 @@ realizar a contagem de pessoas pelo prédio, etc.
 ### Observações:
 
 * Recomenda-se executar o **Terreo** primeiro que o **1º Andar**.
+* O arquivo de log será gerado dentro da pasta **central**.
 * Caso queira executar modificando a porta do central ou o ip, se faz necessário atualizar os arquivos **json** tanto na pasta `central` quanto na pasta `distribuido`.
 * Executar o **Central** em uma janela do terminal grande (se possivel em tela cheia) pois o layout montado depende disso.
-* Devido a biblioteca **pynput** se faz necessário que o projeto seja executado utilizando tunalamento via ssh, usando o comando abaixo:
-
-    ```
-    ssh -R 10048:localhost:10048 <usuario e path da rasp42>
-    ```
 
 ## Como executar
 
@@ -29,26 +25,12 @@ Na execução desse projeto deve-se executar primeiro o servidor central e depoi
 
 #### Central
 
-O Servidor central foi feito usando a linguagem **python** e para executar o projeto deve instalar alguns pacotes simples 
-que estão no arquivo **requirements.txt**.
-
-```
-pip install -r requirements.txt
-```
-Se quiser antes da etapa acima voce pode utilizar um ambiente virtual do python, criado assim:
-
-```
-python -m venv .venv
-source .venv/bin/activate
-```
-
-Executar o servidor central:
+O Servidor central foi feito usando a linguagem **python** e para executar o projeto deve se executar o seguinte comando:
 
 ```
 cd central
 python server.py
 ```
-Não executar de fora da pasta `central` pois o arquivo `alarme.mp3` se encontra dentro da mesma.
 
 #### Distribuidos
 
